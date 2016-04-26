@@ -1,30 +1,25 @@
 #!/usr/bin/env bash
+. lib.sh
 
 ## Initialize
 FINALRC=0
 CURRENTHASH=$(git rev-parse HEAD)
 
 ## Basic sanity check for ALL zones
-echo "INFO [$(date)]: Check zone syntax of all zones with named-checkzone - start"
-echo "==="
+log_info1 "Check zone syntax of all zones with named-checkzone"
 
 for zone in *.zone; do
-  echo "Checking zone ${zone}..."
+  log_info2 "Checking zone ${zone}..."
   named-checkzone -i local "${zone%.zone}" "$zone";
   [ $? -eq 0 ] || FINALRC=1
-  echo "==="
 done
-
-echo "INFO [$(date)]: Check zone syntax of all zones with named-checkzone - end"
-echo "---------------------------------------------------------------------------------"
 
 ## Check that the zone serial of the updated zones
 #  is higher than the currently active one
-echo "INFO [$(date)]: Compare serial numbers of changed zones - start"
-echo "==="
+log_info1 "Compare serial numbers of changed zones"
 
 if [ "$1" == "allzones" ]; then
-  echo "INFO acting on all *.zone files"
+  log_info1 "acting on all *.zone files"
   CHANGEDFILES="*.zone"
 elif [ -f .lasthash ]; then
   CHANGEDFILES="$(git diff --name-only HEAD "$( < .lasthash )" -- '*.zone')"
@@ -33,9 +28,10 @@ else
 fi
 
 if [ -z "$NS_HIDDENMASTER" ]; then
-  echo "SKIPPING - NS_HIDDENMASTER not set"
+  log_info2 "SKIPPING - NS_HIDDENMASTER not set"
 else
   for file in $CHANGEDFILES; do
+    log_info2 "Checking ${file}..."
     if [ ! -f $file ]; then
       echo "SKIPPING - ${file} - file not found"
       continue
@@ -62,8 +58,7 @@ else
   done
 fi
 
-echo "INFO [$(date)]: Compare serial numbers of changed zones - end"
-echo "INFO [$(date)]: Checking zonefiles. Final RC ${FINALRC} - end"
+log_info2 "Checking zonefiles: Final RC ${FINALRC}"
 
 ## End script
 exit $FINALRC
