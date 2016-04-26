@@ -36,6 +36,10 @@ if [ -z "$NS_HIDDENMASTER" ]; then
   echo "SKIPPING - NS_HIDDENMASTER not set"
 else
   for file in $CHANGEDFILES; do
+    if [ ! -f $file ]; then
+      echo "SKIPPING - ${file} - file not found"
+      continue
+    fi
     zone="${file%.zone}"
 
     # Find current active serial on hidden master - skip check if not there
