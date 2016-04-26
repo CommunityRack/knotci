@@ -2,7 +2,9 @@
 . lib.sh
 
 ZONESERIAL=$(date +"%s")
-MAGICSTRING="SERIALAUTOUPDATE"
+if [ -z "$MAGICSTRING" ]; then
+  MAGICSTRING="1 ; SERIALAUTOUPDATE"
+fi
 
 if [ "$1" == "allzones" ]; then
   log_info1 "acting on all *.zone files"
@@ -21,10 +23,10 @@ for file in $CHANGEDFILES; do
   # search for magic string - only do sed when found
   if grep -q "$MAGICSTRING" "$file"; then
     log_info2 "updating serial to $ZONESERIAL in $file"
-    sed -i "s/1 ; SERIALAUTOUPDATE/$ZONESERIAL/" "$file"
-    echo "${file%.zone}: $ZONESERIAL" >> .oldserials.new
+    sed -i "s/${MAGICSTRING}/${ZONESERIAL}/" "$file"
+    echo "${file%.zone}: ${ZONESERIAL}" >> .oldserials.new
   else
-    log_info2 "${MAGICSTRING} not found in $file"
+    log_info2 "${MAGICSTRING} not found in ${file}"
   fi
 done
 
@@ -36,8 +38,8 @@ for file in *.zone ; do
     # If the file in question isn't known yet, try to restore the value quickly
     [ -z "$old_serial" ] && old_serial="$( date +"%s" -r "$file" )"
     log_info2 "resetting serial in $file to $old_serial"
-    sed -i "s/1 ; SERIALAUTOUPDATE/${old_serial}/" "$file"
-    echo "${file%.zone}: $old_serial" >> .oldserials.new
+    sed -i "s/${MAGICSTRING}/${old_serial}/" "$file"
+    echo "${file%.zone}: ${old_serial}" >> .oldserials.new
   fi
 done
 
