@@ -35,7 +35,7 @@ else
   eval "$(ssh-agent -s)"
   ssh-add <(echo "$SSH_PRIVATE_KEY")
   mkdir -p ~/.ssh && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  rsync "$RSYNCPARAMS" '.' "$SSH_USER"@"$NS_HIDDENMASTER":"$RSYNC_DEST_DIR"
+  rsync $RSYNCPARAMS '.' "$SSH_USER"@"$NS_HIDDENMASTER":"$RSYNC_DEST_DIR"
   rc=$?; if [[ $rc != 0 ]]; then echo "rsync failed with $rc"; exit 1; fi
 fi
 
