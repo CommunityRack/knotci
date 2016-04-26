@@ -31,10 +31,10 @@ elif [ -z "$SSH_PRIVATE_KEY" ]; then
   echo "FAILED - SSH_PRIVATE_KEY not set - cannot sync without SSH key"
   exit 1
 else
-  log_info2 "rsync to ${SSH_USER}@${NS_HIDDENMASTER}:${RSYNC_DEST_DIR}"
-  eval "$(ssh-agent -s)"
-  ssh-add <(echo "$SSH_PRIVATE_KEY")
-  mkdir -p ~/.ssh && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  log_info2 "rsync to ${SSH_USER}@${NS_HIDDENMASTER}:${RSYNC_DEST_DIR} using a temporary SSH agent"
+  eval "$(ssh-agent -s)" > /dev/null 2>&1
+  ssh-add <(echo "$SSH_PRIVATE_KEY") > /dev/null 2>&1
+  mkdir -p ~/.ssh && echo -e "Host *\n\tStrictHostKeyChecking no\n\tLogLevel=quiet\n\n" > ~/.ssh/config
   rsync $RSYNCPARAMS '.' "$SSH_USER"@"$NS_HIDDENMASTER":"$RSYNC_DEST_DIR"
   rc=$?; if [[ $rc != 0 ]]; then echo "rsync failed with $rc"; exit 1; fi
 fi
