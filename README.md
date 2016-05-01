@@ -56,6 +56,10 @@ When executed without parameters, it updates the serial on all files changed sin
 to update the serial on all zone files which contain the string `1 ; SERIALAUTOUPDATE`.
 It also restores the last serials which it gets from the cached file `.oldserials`.
 
+Environment variables used:
+
+* `MAGICSTRING`: Magicstring for updating zone serial. Default: `1 ; SERIALAUTOUPDATE`
+
 ### checkzones.sh
 
 This scripts validates the zonefiles with `named-checkzone` and compares the serial
@@ -63,6 +67,10 @@ to the hidden master. The hidden master is configured in the environment variabl
 To run this script manually, set `NS_HIDDENMASTER` to the address of the hidden master. F.e.:
 
 `NS_HIDDENMASTER=myns.myzone.tld checkzones.sh`
+
+Environment variables used:
+
+* `NS_HIDDENMASTER`: name of the DNS hidden master
 
 ### deployzones.sh
 
@@ -73,4 +81,11 @@ from `NS_HIDDENMASTER`.
 After a successfull sync, all changed zones are reloaded (same mechanism to detect changed zones
 as in `buildzones.sh`). To make a full sync and reload all zones, use the `allzones` command line
 parameter.
+
+Environment variables used:
+
+* `NS_HIDDENMASTER`: name of the DNS hidden master
+* `SSH_USER`: name of the remote SSH user. Default: knot
+* `SSH_PRIVATE_KEY`: Private key of the remote SSH user
+* `RSYNC_DEST_DIR`: destination directory to sync zonefiles to. Default: zones
 
