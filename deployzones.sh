@@ -47,8 +47,8 @@ else
   for file in $CHANGEDFILES; do
     zone=$(echo "$file" | cut -d"/" -f2 | sed "s/zone//")
     log_info2 "Reloading zone ${zone} with knotc"
-    ssh "$SSH_USER"@"$NS_HIDDENMASTER" sudo knotc zone-reload "$zone"
-    ssh "$SSH_USER"@"$NS_HIDDENMASTER" sudo knotc zone-status "$zone"
+    ssh "$SSH_USER"@"$NS_HIDDENMASTER" knotc zone-reload "$zone"
+    ssh "$SSH_USER"@"$NS_HIDDENMASTER" knotc zone-status "$zone"
   done
 fi
 
